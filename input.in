@@ -1,0 +1,17 @@
+programa meuPrograma
+	declare a, b, c : number;
+	declare x, y, z : text;
+	inicio
+		escreva("Hello world");
+		leia(x);
+		leia(a);
+		x := 2 + a - 3.14 * 8 / a;
+		se ( a > 5 ) entao
+			escreva(" a maior que 5");
+		senao
+			escreva(" a menor ou igual a 5");
+		fimse
+		escreva("O resultado vale");
+		escreva(a);
+	fim
+fimprog

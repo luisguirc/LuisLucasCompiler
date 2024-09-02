@@ -1,0 +1,33 @@
+programa meuPrograma
+	declare a,b: number;
+	declare x,y: text;
+	inicio
+		escreva("Ola mundo");
+		escreva("Fim do programa");
+		leia(a);
+		escreva(a);
+		
+		se ( a > 5 ) entao
+			escreva("maior que 5");
+			a := 5.1;
+		senao
+			escreva("menor ou igual a 5");
+		fimse
+		
+		enquanto ( a > 5 ) faca
+			escreva("maior que 5");
+			a := a - 1;
+		fimenquanto
+		
+		faca
+			escreva("escrevendo");
+			b := 2;
+			x := "abc";
+		enquanto (b == 3);
+		
+		para a := 1 ate 3 passo 1 faca
+			escreva("loop for");
+			a := a + 1;
+		fimpara
+	fim
+fimprog
