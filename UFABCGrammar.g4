@@ -160,8 +160,8 @@ cmdAttrib	: ID	  { if (!isDeclared(_input.LT(-1).getText())){
 			  expr
 			  PV
 			  
-					  { System.out.println("Left side expression type = " +leftType);
-					    System.out.println("Right side expression type = " +rightType);
+					  { //System.out.println("Left side expression type = " +leftType);
+					    //System.out.println("Right side expression type = " +rightType);
 					    if (leftType.getValue() < rightType.getValue()){
 					  	  throw new UFABCSemanticException("Type Mismatching on assignment");
 					    }

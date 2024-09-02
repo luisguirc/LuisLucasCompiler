@@ -3,7 +3,6 @@ programa meuPrograma
 	declare x,y: text;
 	inicio
 		escreva("Ola mundo");
-		escreva("Fim do programa");
 		leia(a);
 		escreva(a);
 		
