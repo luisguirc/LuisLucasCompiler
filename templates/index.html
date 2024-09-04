@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Compiler Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 90%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .textarea-container {
+            display: flex;
+            flex-grow: 1;
+            flex-direction: column;
+            min-height: 300px;
+        }
+        textarea {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+        }
+        #result-box {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        #additional-info-box {
+            background-color: #eee;
+            color: #666;
+            height: 100px;
+            margin-top: 10px;
+            resize: vertical;
+            margin-left: 50.8%;
+            width: 47%;
+            min-height: 100px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #5cb85c;
+            color: white;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #language-select {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Simple Compiler Translator</h1>
+    <h2>by Lucas and Luis</h2>
+
+    <label for="language-select">Select Language:</label>
+    <select id="language-select">
+        <option value="java">Java</option>
+        <!--option value="python">Python</option!-->
+    </select>
+
+    <div class="container">
+        <div class="textarea-container">
+            <textarea id="input-box" placeholder="Type your code here..."></textarea>
+        </div>
+        <div class="textarea-container">
+            <textarea id="result-box" readonly placeholder="The translated code will appear here..."></textarea>
+        </div>
+    </div>
+    
+    <textarea id="additional-info-box" readonly placeholder="Additional info will appear here..."></textarea>
+
+    <button onclick="translateCode()">Translate Code</button>
+
+    <script>
+        function translateCode() {
+            const code = document.getElementById('input-box').value;
+
+            fetch('/compile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code: code })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result-box').value = 'Error: ' + data.details;
+                    document.getElementById('additional-info-box').value = '';
+                } else {
+                    document.getElementById('result-box').value = data.translated_code;
+                    document.getElementById('additional-info-box').value = data.additional_info;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result-box').value = 'Error: ' + error.message;
+                document.getElementById('additional-info-box').value = '';
+            });
+        }
+        function translateCode() {
+            const code = document.getElementById('input-box').value;
+            const language = document.getElementById('language-select').value;
+
+            fetch('/compile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code: code, language: language })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result-box').value = 'Error: ' + data.details;
+                    document.getElementById('additional-info-box').value = '';
+                } else {
+                    document.getElementById('result-box').value = data.translated_code;
+                    document.getElementById('additional-info-box').value = data.additional_info;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result-box').value = 'Error: ' + error.message;
+                document.getElementById('additional-info-box').value = '';
+            });
+        }
+    </script>
+
+</body>
+</html>
