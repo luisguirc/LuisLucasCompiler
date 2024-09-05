@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import subprocess
+import os
 
 app = Flask(__name__)
 
@@ -16,18 +17,24 @@ def compile_code():
         return jsonify({'error': 'No code provided'}), 400
 
     try:
+        project_dir = os.path.dirname(os.path.abspath(__file__))
+        bin_dir = os.path.join(project_dir, "bin")
+        antlr_jar_path = os.path.join(project_dir, "antlr-4.13.2-complete.jar")
+
+        classpath = f"{bin_dir};{antlr_jar_path}"
+        
         result = subprocess.run(
             [
                 'java',
                 '-Dfile.encoding=UTF-8',
                 '-classpath',
-                r"C:\Users\kendy\eclipse-workspace\LuisLucasCompiler\bin;C:\Users\kendy\eclipse-workspace\LuisLucasCompiler\antlr-4.13.2-complete.jar",
+                classpath,
                 'io.compiler.main.MainClass', code, language
             ],
             capture_output=True,
             text=True
         )
-        
+
         # Get the full output from the compiler
         full_output = result.stdout
 
