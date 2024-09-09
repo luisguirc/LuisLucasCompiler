@@ -23,6 +23,7 @@ grammar UFABCGrammar;
     
     private AbstractExpression topo = null;
     private Stack<AbstractExpression> expressionStack = new Stack<AbstractExpression>();
+    private int lastOperatorPriority = 0;
     
     public void updateType(){
     	for(Var v: currentDecl){
@@ -204,23 +205,61 @@ cmdLeitura	: 'leia'
 			
 cmdEscrita	: 'escreva'
 			   AP
-			   ( termo  { Command cmdWrite = new WriteCommand(_input.LT(-1).getText());
+			   ( fator  { Command cmdWrite = new WriteCommand(_input.LT(-1).getText());
 			   			  stack.peek().add(cmdWrite);
 			   			}
 			   )
 			   FP PV    { rightType = null; }
 			;
 
-expr		: termo  { strExpr += _input.LT(-1).getText(); }
+expr		: termo
 			  exprl
 			;
 
-exprl		: ( OP  { strExpr += _input.LT(-1).getText(); }
-              termo { strExpr += _input.LT(-1).getText(); }
-              ) *
-			;	
-			
-termo		: ID   { if (!isDeclared(_input.LT(-1).getText())){
+exprl		: ((OP_SOMA | OP_SUB) 
+				{ strExpr += _input.LT(-1).getText();
+				  BinaryExpression bin = new BinaryExpression(_input.LT(-1).getText().charAt(0));
+				  bin.setLeft(expressionStack.pop());
+				  expressionStack.push(bin);
+				}
+			  termo
+			    {
+			      AbstractExpression topo = expressionStack.pop();
+              	  BinaryExpression root = (BinaryExpression) expressionStack.pop();
+              	  root.setRight(topo);
+              	  expressionStack.push(root);
+			    })*
+			;
+
+termo		: fator { strExpr += _input.LT(-1).getText(); }
+			  termol
+			;
+
+termol		: ((OP_MUL | OP_DIV)
+				{ strExpr += _input.LT(-1).getText();
+				  BinaryExpression bin = new BinaryExpression(_input.LT(-1).getText().charAt(0));
+                  if (expressionStack.peek() instanceof UnaryExpression){
+                	bin.setLeft(expressionStack.pop());
+                  } else {
+                	BinaryExpression father = (BinaryExpression) expressionStack.pop();
+                	if(father.getOperation() == '-' || father.getOperation() == '+'){
+                	  bin.setLeft(father.getRight());
+                	  father.setRight(bin);
+                	} else {
+                	  bin.setLeft(father);
+                	  expressionStack.push(bin);
+                	}
+                  }
+				}
+  			  fator
+  			    { strExpr += _input.LT(-1).getText();
+  			      bin.setRight(expressionStack.pop());
+              	  expressionStack.push(bin);
+  			    }
+  			  )*
+  			;
+
+fator		: ID   { if (!isDeclared(_input.LT(-1).getText())){
 					   throw new UFABCSemanticException("Undeclared variable: " + _input.LT(-1).getText());
 					 }
 					 if (!symbolTable.get(_input.LT(-1).getText()).isInitialized()) {
@@ -257,9 +296,18 @@ termo		: ID   { if (!isDeclared(_input.LT(-1).getText())){
 					  }
 			        }
 			;
+			
+OP_SOMA		: '+'
+			;
 
-OP			: '+' | '-' | '*' | '/' 
-			;	
+OP_SUB		: '-'
+			;
+			
+OP_MUL		: '*'
+			;
+
+OP_DIV		: '/'
+			;
 
 OP_AT		: ':='
 			;

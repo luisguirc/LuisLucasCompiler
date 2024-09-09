@@ -27,7 +27,7 @@ public class meuPrograma {
     } while (b==3);
     for (a = 1; a  <= 3; a  += 1) {
         System.out.println("loop for");
-        a = a+2;
+        a = 4*2/2;
     }
     }
 }
