@@ -7,6 +7,7 @@ grammar UFABCGrammar;
 	import io.compiler.types.*;
 	import io.compiler.core.exceptions.*;
 	import io.compiler.core.ast.*;
+	import io.compiler.runtime.*;
 }
 
 @members {
@@ -19,6 +20,9 @@ grammar UFABCGrammar;
     private IfCommand currentIfCommand;
     
     private Stack<ArrayList<Command>> stack = new Stack<ArrayList<Command>>();
+    
+    private AbstractExpression topo = null;
+    private Stack<AbstractExpression> expressionStack = new Stack<AbstractExpression>();
     
     public void updateType(){
     	for(Var v: currentDecl){
@@ -38,6 +42,20 @@ grammar UFABCGrammar;
     
     public boolean isDeclared(String id){
     	return symbolTable.get(id) != null;
+    }
+    
+    public double generateValue(){
+    	if (topo == null){
+    		topo = expressionStack.pop();
+    	}
+    	return topo.evaluate();
+    }
+    
+    public String generateJSON(){
+    	if (topo == null){
+    		topo = expressionStack.pop();
+    	}
+    	return topo.toJSON();
     }
 }
 
@@ -197,6 +215,11 @@ expr		: termo  { strExpr += _input.LT(-1).getText(); }
 			  exprl
 			;
 
+exprl		: ( OP  { strExpr += _input.LT(-1).getText(); }
+              termo { strExpr += _input.LT(-1).getText(); }
+              ) *
+			;	
+			
 termo		: ID   { if (!isDeclared(_input.LT(-1).getText())){
 					   throw new UFABCSemanticException("Undeclared variable: " + _input.LT(-1).getText());
 					 }
@@ -222,6 +245,8 @@ termo		: ID   { if (!isDeclared(_input.LT(-1).getText())){
 					  		rightType = Types.NUMBER;
 					  	}
 					  }
+					  UnaryExpression element = new UnaryExpression(Double.parseDouble(_input.LT(-1).getText()));
+					  expressionStack.push(element);
 			        }
 			| TEXTO { if (rightType == null){
 						rightType = Types.TEXT;
@@ -232,11 +257,6 @@ termo		: ID   { if (!isDeclared(_input.LT(-1).getText())){
 					  }
 			        }
 			;
-
-exprl		: ( OP  { strExpr += _input.LT(-1).getText(); }
-              termo { strExpr += _input.LT(-1).getText(); }
-              ) *
-			;	
 
 OP			: '+' | '-' | '*' | '/' 
 			;	

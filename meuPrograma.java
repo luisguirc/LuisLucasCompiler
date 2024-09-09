@@ -2,12 +2,11 @@ import java.util.Scanner;
 public class meuPrograma { 
     public static void main(String args[]) { 
     Scanner _scTrx = new Scanner(System.in);
-    int a;
-    int b;
+    double a;
+    double b;
     String x;
     String y;
     System.out.println("Ola mundo");
-    System.out.println("Fim do programa");
     a = _scTrx.nextInt();
     System.out.println(a);
     if (a>5) {
@@ -28,7 +27,7 @@ public class meuPrograma {
     } while (b==3);
     for (a = 1; a  <= 3; a  += 1) {
         System.out.println("loop for");
-        a = a+1;
+        a = a+2;
     }
     }
 }

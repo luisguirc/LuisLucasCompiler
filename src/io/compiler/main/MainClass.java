@@ -37,6 +37,7 @@ public class MainClass {
 
             parser.programa();
             System.out.println("Compilation successful. Target language: " + language);
+            System.out.println(parser.generateJSON());
 
             // Generate the code for the program
             Program program = parser.getProgram();
