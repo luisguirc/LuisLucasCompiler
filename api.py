@@ -23,6 +23,8 @@ def compile_code():
 
         classpath = f"{bin_dir};{antlr_jar_path}"
         
+        print(language)
+
         result = subprocess.run(
             [
                 'java',
@@ -34,6 +36,8 @@ def compile_code():
             capture_output=True,
             text=True
         )
+
+        print(result)
 
         # Get the full output from the compiler
         full_output = result.stdout

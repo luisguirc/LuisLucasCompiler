@@ -44,24 +44,27 @@ public class IfCommand extends Command {
 	}
 	
 	@Override
-	public String generateTarget() {
-		StringBuilder str = new StringBuilder();
-		str.append("if (" +expression+ ") {\n");
-		
-		for (Command cmd: trueList) {
-			str.append(indent(cmd.generateTarget()));
-		}
-		str.append("}\n");
-		
-		if (!falseList.isEmpty()) {
-			str.append("else {\n");
-			for (Command cmd: falseList) {
-				str.append(indent(cmd.generateTarget()));
-			}
-			str.append("}\n");
-		}
-		
-		return str.toString();
+	public String generateTarget(String language) {
+	    StringBuilder str = new StringBuilder();
+	    
+	    if (language.equals("java") || language.equals("c")) {          
+	        str.append("if (" + expression + ") {\n");
+	        
+	        for (Command cmd: trueList) {
+	            str.append(indent(cmd.generateTarget(language)));
+	        }
+	        str.append("}\n");
+	        
+	        if (!falseList.isEmpty()) {
+	            str.append("else {\n");
+	            for (Command cmd: falseList) {
+	                str.append(indent(cmd.generateTarget(language)));
+	            }
+	            str.append("}\n");
+	        }
+	    }
+	    
+	    return str.toString();
 	}
 
 }

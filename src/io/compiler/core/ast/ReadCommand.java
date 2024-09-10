@@ -25,8 +25,22 @@ public class ReadCommand extends Command {
 	}
 
 	@Override
-	public String generateTarget() {
-		return var.getId() + " = " + ((var.getType()==Types.NUMBER)?"_scTrx.nextInt();":"_scTrx.nextLine();") + "\n";
+	public String generateTarget(String language) {
+	    String str = "";
+	    
+	    if (language.equals("java")) {
+	        str = var.getId() + " = " + ((var.getType() == Types.NUMBER) ? "_scTrx.nextInt();" : "_scTrx.nextLine();") + "\n";
+	        
+	    } else if (language.equals("c")) {
+	        if (var.getType() == Types.NUMBER) {
+	            str = "scanf(\"%lf\", &" + var.getId() + ");\n";  // Reading a double for numbers
+	        } else {
+	            str = "scanf(\"%s\", " + var.getId() + ");\n";  // Reading a string for non-numeric input
+	        }
+	    }
+	    
+	    return str;
 	}
+
 
 }

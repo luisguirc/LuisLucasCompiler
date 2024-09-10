@@ -8,7 +8,6 @@ programa meuPrograma
 		
 		se ( a > 5 ) entao
 			escreva("maior que 5");
-			a := 5.1;
 		senao
 			escreva("menor ou igual a 5");
 		fimse

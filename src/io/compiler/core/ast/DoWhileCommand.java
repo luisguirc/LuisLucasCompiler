@@ -39,15 +39,15 @@ public class DoWhileCommand extends Command {
 	}
 
 	@Override
-	public String generateTarget() {
+	public String generateTarget(String language) {
 		StringBuilder str = new StringBuilder();
-		str.append("do {\n");
-		
-		for (Command cmd : commandList) {
-			str.append(indent(cmd.generateTarget()));
-		}
-		
-		str.append("} while (" + condition + ");\n");
+		if (language.equals("c") || language.equals("java")) {
+	        str.append("do {\n");
+	        for (Command cmd : commandList) {
+	            str.append(indent(cmd.generateTarget(language)));
+	        }
+	        str.append("} while (" + condition + ");\n");
+	    }
 		return str.toString();
 	}
 }

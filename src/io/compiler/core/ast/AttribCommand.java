@@ -34,9 +34,24 @@ public class AttribCommand extends Command {
     }
 
     @Override
-    public String generateTarget() {
+    public String generateTarget(String language) {
         StringBuilder str = new StringBuilder();
-        str.append(var.getId() + " = " + expression + ";\n");
+        
+        if (language.equals("java")) {
+            str.append(var.getId() + " = " + expression + ";\n");
+            
+        } else if (language.equals("c")) {
+            switch (var.getType()) {
+                case NUMBER:
+                case REALNUMBER:
+                    str.append(var.getId() + " = " + expression + ";\n");
+                    break;
+                case TEXT:
+                    str.append("strcpy(" + var.getId() + ", " + expression + ");\n");
+                    break;
+            }
+        }
+        
         return str.toString();
     }
 }

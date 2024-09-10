@@ -4,7 +4,7 @@ public abstract class Command {
 	
 	protected static final String INDENTATION = "    ";
 	
-	public abstract String generateTarget();
+	public abstract String generateTarget(String language);
 	
 	protected String indent(String code) {
 		String[] lines = code.split("\n");

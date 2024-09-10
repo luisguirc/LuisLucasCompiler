@@ -161,6 +161,8 @@ declaravar	: 'declare' { currentDecl.clear(); }
                (
                'number' {currentType = Types.NUMBER;}
                |
+               'realnumber' {currentType = Types.REALNUMBER;}
+               |
                'text'   {currentType = Types.TEXT;}
                )        { updateType(); } 
                PV
@@ -205,7 +207,7 @@ cmdLeitura	: 'leia'
 			
 cmdEscrita	: 'escreva'
 			   AP
-			   ( fator  { Command cmdWrite = new WriteCommand(_input.LT(-1).getText());
+			   ( fator  { Command cmdWrite = new WriteCommand(_input.LT(-1).getText(), program);
 			   			  stack.peek().add(cmdWrite);
 			   			}
 			   )
@@ -277,16 +279,26 @@ fator		: ID   { if (!isDeclared(_input.LT(-1).getText())){
 					 }
 				   }  
 					 
-			| NUM	{ if (rightType == null){
+			| NUMBER  { if (rightType == null){
 						rightType = Types.NUMBER;
 					  } else {
 					  	if (rightType.getValue() < Types.NUMBER.getValue()){
 					  		rightType = Types.NUMBER;
 					  	}
 					  }
+					  UnaryExpression element = new UnaryExpression(Integer.parseInt(_input.LT(-1).getText()));
+					  expressionStack.push(element);
+			         }
+			| REALNUMBER { if (rightType == null){
+						rightType = Types.REALNUMBER;
+					  } else {
+					  	if (rightType.getValue() < Types.REALNUMBER.getValue()){
+					  		rightType = Types.REALNUMBER;
+					  	}
+					  }
 					  UnaryExpression element = new UnaryExpression(Double.parseDouble(_input.LT(-1).getText()));
 					  expressionStack.push(element);
-			        }
+			         }
 			| TEXTO { if (rightType == null){
 						rightType = Types.TEXT;
 					  } else {
@@ -318,8 +330,11 @@ OPREL		: '>' | '<' | '>=' | '<=' | '<>' | '=='
 ID			: [a-z] ( [a-z] | [A-Z] | [0-9] )*		
 			;
 
-NUM			: [0-9]+ ('.' [0-9]+ )?
-			;			
+NUMBER		: [0-9]+
+			;
+
+REALNUMBER	: [0-9]+ ('.' [0-9]+ )?		
+			;	
 
 VIRG		: ','
 			;

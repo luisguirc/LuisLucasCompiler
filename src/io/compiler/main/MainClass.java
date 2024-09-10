@@ -18,7 +18,7 @@ public class MainClass {
             UFABCGrammarLexer lexer;
             UFABCGrammarParser parser;
 
-            String language = "java";  // Default to Java
+            String language = "c";  // Default to Java
             String codeInput = "";
 
             // Check if an argument is passed; if so, use it as input
@@ -37,26 +37,26 @@ public class MainClass {
 
             parser.programa();
             System.out.println("Compilation successful. Target language: " + language);
-            System.out.println(parser.generateValue());
-            System.out.println(parser.generateJSON());
+//            System.out.println(parser.generateValue());
+//            System.out.println(parser.generateJSON());
 
             // Generate the code for the program
             Program program = parser.getProgram();
-
+            
             if (args.length == 0) {
                 // Write the output to a file if no argument is passed
                 try {
                     File f = new File(program.getName() + "." + language);
                     FileWriter fr = new FileWriter(f);
                     PrintWriter pr = new PrintWriter(fr);
-                    pr.println(program.generateTarget());
+                    pr.println(program.generateTarget(language));
                     pr.close();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
 
-            System.out.println(program.generateTarget());;
+            System.out.println(program.generateTarget(language));;
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
