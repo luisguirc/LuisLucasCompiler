@@ -36,13 +36,12 @@ def compile_code():
             capture_output=True,
             text=True
         )
+        if result.stderr:
+            error_output = result.stderr
+            return jsonify({'error': 'Compilation failed', 'details': error_output}), 500
 
-        print(result)
-
-        # Get the full output from the compiler
         full_output = result.stdout
 
-        # Split the output into lines and find where the actual code starts
         output_lines = full_output.splitlines()
         additional_info = []
         translated_code_lines = []
@@ -59,9 +58,6 @@ def compile_code():
         translated_code = "\n".join(translated_code_lines)
         additional_info_text = "\n".join(additional_info)
 
-        if result.returncode != 0:
-            return jsonify({'error': 'Compilation failed', 'details': additional_info_text}), 500
-        
         return jsonify({'translated_code': translated_code, 'additional_info': additional_info_text})
 
     except Exception as e:

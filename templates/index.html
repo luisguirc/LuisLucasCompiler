@@ -106,57 +106,32 @@
     <button onclick="translateCode()">Translate Code</button>
 
     <script>
-        function translateCode() {
-            const code = document.getElementById('input-box').value;
+		function translateCode() {
+		    const code = document.getElementById('input-box').value;
+		    const language = document.getElementById('language-select').value;
 
-            fetch('/compile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ code: code })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('result-box').value = 'Error: ' + data.details;
-                    document.getElementById('additional-info-box').value = '';
-                } else {
-                    document.getElementById('result-box').value = data.translated_code;
-                    document.getElementById('additional-info-box').value = data.additional_info;
-                }
-            })
-            .catch(error => {
-                document.getElementById('result-box').value = 'Error: ' + error.message;
-                document.getElementById('additional-info-box').value = '';
-            });
-        }
-        function translateCode() {
-            const code = document.getElementById('input-box').value;
-            const language = document.getElementById('language-select').value;
-
-            fetch('/compile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ code: code, language: language })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('result-box').value = 'Error: ' + data.details;
-                    document.getElementById('additional-info-box').value = '';
-                } else {
-                    document.getElementById('result-box').value = data.translated_code;
-                    document.getElementById('additional-info-box').value = data.additional_info;
-                }
-            })
-            .catch(error => {
-                document.getElementById('result-box').value = 'Error: ' + error.message;
-                document.getElementById('additional-info-box').value = '';
-            });
-        }
+		    fetch('/compile', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json'
+		        },
+		        body: JSON.stringify({ code: code, language: language })
+		    })
+		    .then(response => response.json())
+		    .then(data => {
+		        if (data.error) {
+		            document.getElementById('result-box').value = 'Error: ' + data.error;
+		            document.getElementById('additional-info-box').value = data.details;
+		        } else {
+		            document.getElementById('result-box').value = data.translated_code;
+		            document.getElementById('additional-info-box').value = data.additional_info;
+		        }
+		    })
+		    .catch(error => {
+		        document.getElementById('result-box').value = 'Error: ' + error.message;
+		        document.getElementById('additional-info-box').value = 'An error occurred while processing the request.';
+		    });
+		}
     </script>
 
 </body>
