@@ -12,6 +12,10 @@ programa meuPrograma
 			escreva("maior que 5");
 		senao
 			escreva("menor ou igual a 5");
+			faca
+				escreva("processando");
+				b := 2 + 1;
+			enquanto (b == 3);
 		fimse
 		
 		enquanto ( a > 5 ) faca
