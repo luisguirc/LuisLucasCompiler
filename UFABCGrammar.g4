@@ -23,7 +23,8 @@ grammar UFABCGrammar;
     
     private AbstractExpression topo = null;
     private Stack<AbstractExpression> expressionStack = new Stack<AbstractExpression>();
-    private int lastOperatorPriority = 0;
+    private boolean containsVariable = false;
+    private String variableName = "";
     
     public void updateType(){
     	for(Var v: currentDecl){
@@ -45,11 +46,18 @@ grammar UFABCGrammar;
     	return symbolTable.get(id) != null;
     }
     
-    public double generateValue(){
-    	if (topo == null){
+    public void generateValue(){
+    	if(!containsVariable){
     		topo = expressionStack.pop();
-    	}
-    	return topo.evaluate();
+	    	double value = topo.evaluate();
+	    	System.out.println("[INFO] Evaluated expression \"" +topo.toString()+ "\" with value " + value);
+	    	System.out.println("[INFO] Expression JSON: " + generateJSON());
+	    } else {
+	    	 System.out.println("[INFO] Skipping evaluation due to variable \""+variableName+"\" in expression.");
+	    }
+    	
+    	containsVariable = false;
+    	// return value;
     }
     
     public String generateJSON(){
@@ -74,7 +82,7 @@ programa	: 'programa' ID { program.setName(_input.LT(-1).getText());
                 // After parsing the program
 				for (Var v : symbolTable.values()) {
     			  if (!v.isUsed()) {
-        		    System.out.println("Warning: Variable " + v.getId() + " declared but never used.");
+        		    System.out.println("[WARNING] Variable " + v.getId() + " declared but never used.");
                   }
                 }
               }
@@ -96,11 +104,14 @@ cmdFor 		: 'para' ID  { if (!isDeclared(_input.LT(-1).getText())) {
 	                       ForCommand forCmd = new ForCommand(); }
 	                       
 			   OP_AT expr { forCmd.setInitialization(strExpr);
-			   				strExpr = ""; }
+			   				strExpr = "";
+			   				generateValue(); }
 			   
 	  		  'ate' expr { forCmd.setCondition(forCmd.getInitialization().split("=")[0] + " <= " + strExpr);
-	  		  			   strExpr = ""; }
-			  'passo' expr { forCmd.setIncrement(forCmd.getInitialization().split("=")[0] + " += " + strExpr); }
+	  		  			   strExpr = "";
+	  		  			   generateValue(); }
+			  'passo' expr { forCmd.setIncrement(forCmd.getInitialization().split("=")[0] + " += " + strExpr);
+			  				 generateValue(); }
 			  'faca' { stack.push(new ArrayList<Command>()); }
 			   comando+ { forCmd.setCommandList(stack.pop()); }
 	  		  'fimpara' { stack.peek().add(forCmd); }
@@ -110,9 +121,9 @@ cmdFor 		: 'para' ID  { if (!isDeclared(_input.LT(-1).getText())) {
 cmdWhile   : 'enquanto'  { stack.push(new ArrayList<Command>());
  					      strExpr = ""; }
               AP
-              expr
+              expr	  { generateValue(); }
               OPREL   { strExpr += _input.LT(-1).getText(); }
-              expr
+              expr	  { generateValue(); }
               FP      { WhileCommand whileCmd = new WhileCommand(strExpr); }
              'faca'
               comando+ { whileCmd.setCommandList(stack.pop()); }
@@ -126,9 +137,9 @@ cmdDoWhile : 'faca'  { stack.push(new ArrayList<Command>());
                         stack.peek().add(doWhileCmd); }
             'enquanto' 
              AP		 { strExpr = ""; }
-             expr
+             expr	 { generateValue(); }
              OPREL   { strExpr += _input.LT(-1).getText(); }
-             expr
+             expr	 { generateValue(); }
              FP      { doWhileCmd.setCondition(strExpr); }
              PV
            ;
@@ -139,9 +150,9 @@ cmdIF		: 'se'  { stack.push(new ArrayList<Command>()); //criar um novo escopo
 					  currentIfCommand = new IfCommand();
 					}
 			   AP
-			   expr
+			   expr		   { generateValue(); }
 			   OPREL       { strExpr += _input.LT(-1).getText(); }
-			   expr
+			   expr		   { generateValue(); }
 			   FP          { currentIfCommand.setExpression(strExpr); }
 			  'entao'
 			   comando+    { currentIfCommand.setTrueList(stack.pop()); }
@@ -159,11 +170,11 @@ declaravar	: 'declare' { currentDecl.clear(); }
                )*	 
                DP 
                (
-               'number' {currentType = Types.NUMBER;}
+               'numero' {currentType = Types.NUMBER;}
                |
-               'realnumber' {currentType = Types.REALNUMBER;}
+               'numeroreal' {currentType = Types.REALNUMBER;}
                |
-               'text'   {currentType = Types.TEXT;}
+               'texto'   {currentType = Types.TEXT;}
                )        { updateType(); } 
                PV
 			;		
@@ -178,7 +189,9 @@ cmdAttrib	: ID	  { if (!isDeclared(_input.LT(-1).getText())){
                   		strExpr = "";
 					  }
 			  OP_AT
-			  expr
+			  expr    {
+			  			if(leftType == Types.NUMBER || leftType == Types.REALNUMBER ) generateValue();
+			  		  }
 			  PV
 			  
 					  { //System.out.println("Left side expression type = " +leftType);
@@ -189,6 +202,7 @@ cmdAttrib	: ID	  { if (!isDeclared(_input.LT(-1).getText())){
 					    
 					    AttribCommand cmd = new AttribCommand(var, strExpr);
                         stack.peek().add(cmd);
+                        
 					  }
 			;
 			
@@ -209,6 +223,7 @@ cmdEscrita	: 'escreva'
 			   AP
 			   ( fator  { Command cmdWrite = new WriteCommand(_input.LT(-1).getText(), program);
 			   			  stack.peek().add(cmdWrite);
+			   			  containsVariable = false;
 			   			}
 			   )
 			   FP PV    { rightType = null; }
@@ -220,16 +235,20 @@ expr		: termo
 
 exprl		: ((OP_SOMA | OP_SUB) 
 				{ strExpr += _input.LT(-1).getText();
-				  BinaryExpression bin = new BinaryExpression(_input.LT(-1).getText().charAt(0));
-				  bin.setLeft(expressionStack.pop());
-				  expressionStack.push(bin);
+				  if(!containsVariable){
+				  	BinaryExpression bin = new BinaryExpression(_input.LT(-1).getText().charAt(0));
+				  	bin.setLeft(expressionStack.pop());
+				  	expressionStack.push(bin);
+				  }
 				}
 			  termo
 			    {
-			      AbstractExpression topo = expressionStack.pop();
-              	  BinaryExpression root = (BinaryExpression) expressionStack.pop();
-              	  root.setRight(topo);
-              	  expressionStack.push(root);
+			      if(!containsVariable){
+			      	AbstractExpression topo = expressionStack.pop();
+              	  	BinaryExpression root = (BinaryExpression) expressionStack.pop();
+              	  	root.setRight(topo);
+              	  	expressionStack.push(root);
+              	  }
 			    })*
 			;
 
@@ -240,23 +259,28 @@ termo		: fator { strExpr += _input.LT(-1).getText(); }
 termol		: ((OP_MUL | OP_DIV)
 				{ strExpr += _input.LT(-1).getText();
 				  BinaryExpression bin = new BinaryExpression(_input.LT(-1).getText().charAt(0));
-                  if (expressionStack.peek() instanceof UnaryExpression){
-                	bin.setLeft(expressionStack.pop());
-                  } else {
-                	BinaryExpression father = (BinaryExpression) expressionStack.pop();
-                	if(father.getOperation() == '-' || father.getOperation() == '+'){
-                	  bin.setLeft(father.getRight());
-                	  father.setRight(bin);
-                	} else {
-                	  bin.setLeft(father);
-                	  expressionStack.push(bin);
-                	}
-                  }
+				  if(!containsVariable){
+	                  if (expressionStack.peek() instanceof UnaryExpression){
+	                	bin.setLeft(expressionStack.pop());
+	                  } else {
+	                	BinaryExpression father = (BinaryExpression) expressionStack.pop();
+	                	if(father.getOperation() == '-' || father.getOperation() == '+'){
+	                	  bin.setLeft(father.getRight());
+	                	  father.setRight(bin);
+	                	  expressionStack.push(father);
+	                	} else {
+	                	  bin.setLeft(father);
+	                	  expressionStack.push(bin);
+	                	}
+	                  }
+	               }
 				}
   			  fator
   			    { strExpr += _input.LT(-1).getText();
-  			      bin.setRight(expressionStack.pop());
-              	  expressionStack.push(bin);
+  			      if(!containsVariable){
+	  			     bin.setRight(expressionStack.pop());
+	              	 expressionStack.push(bin);
+	              }
   			    }
   			  )*
   			;
@@ -277,6 +301,9 @@ fator		: ID   { if (!isDeclared(_input.LT(-1).getText())){
 					 		rightType = symbolTable.get(_input.LT(-1).getText()).getType();
 					 	}
 					 }
+					 
+					 containsVariable = true;
+					 variableName = _input.LT(-1).getText();
 				   }  
 					 
 			| NUMBER  { if (rightType == null){

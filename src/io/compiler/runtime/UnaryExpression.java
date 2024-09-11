@@ -28,6 +28,11 @@ public class UnaryExpression extends AbstractExpression {
 
 	@Override
 	public String toJSON() {
-		return "{\"value\":" +this.value+ "}";
+		return "{\"value\": " +this.value+ "}";
+	}
+	
+	@Override
+	public String toString() {
+		return Double.toString(this.value);
 	}
 }

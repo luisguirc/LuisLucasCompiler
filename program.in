@@ -1,12 +1,14 @@
 programa meuPrograma
-	declare a,b: number;
-	declare x,y: text;
+	declare a,b: numero;
+	declare c: numeroreal;
+	declare x,y: texto;
 	inicio
 		escreva("Ola mundo");
 		leia(a);
 		escreva(a);
+		c := a;
 		
-		se ( a > 5 ) entao
+		se ( c > 5 ) entao
 			escreva("maior que 5");
 		senao
 			escreva("menor ou igual a 5");
@@ -25,7 +27,7 @@ programa meuPrograma
 		
 		para a := 1 ate 3 passo 1 faca
 			escreva("loop for");
-			a := 4 * 2 / 2;
+			a := 4 + 2 / 2;
 		fimpara
 	fim
 fimprog
