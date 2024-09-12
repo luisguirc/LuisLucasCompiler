@@ -1,0 +1,15 @@
+programa fatorial
+	declare resultado, indice, n: numero;
+	inicio
+		escreva("Insira qual o fatorial a ser calculado: ");
+		leia(n);
+		
+		resultado := 1;
+		para indice := 1 ate n passo 1 faca
+			resultado := resultado * indice;
+		fimpara
+		
+		escreva("Resultado:");
+		escreva(resultado);
+	fim
+fimprog
