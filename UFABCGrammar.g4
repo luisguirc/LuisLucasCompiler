@@ -100,6 +100,7 @@ comando		: cmdAttrib
 cmdFor 		: 'para' ID  { if (!isDeclared(_input.LT(-1).getText())) {
                              throw new UFABCSemanticException("Undeclared variable: " + _input.LT(-1).getText());
                      	   }
+                     	   symbolTable.get(_input.LT(-1).getText()).setInitialized(true);
 	                       strExpr = _input.LT(-1).getText() + " = "; 
 	                       ForCommand forCmd = new ForCommand(); }
 	                       
@@ -378,7 +379,7 @@ FP			: ')'
 DP			: ':'
 		    ;
 		    
-TEXTO		: '"' ([a-z] | [A-Z] | [0-9] | ',' | '.' | ' ' | '-')* '"'
+TEXTO		: '"' ([a-z] | [A-Z] | [0-9] | ',' | '.' | ' ' | '-' | ':')* '"'
 			;
 
 WS			: (' ' | '\n' | '\r' | '\t' ) -> skip

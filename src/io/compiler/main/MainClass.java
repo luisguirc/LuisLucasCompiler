@@ -18,7 +18,7 @@ public class MainClass {
             UFABCGrammarLexer lexer;
             UFABCGrammarParser parser;
 
-            String language = "c";  // Default to Java
+            String language = "java";  // Default to Java
             String codeInput = "";
 
             // Check if an argument is passed; if so, use it as input

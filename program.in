@@ -6,6 +6,8 @@ programa meuPrograma
 		escreva("Ola mundo");
 		leia(a);
 		escreva(a);
+		
+		leia(c);
 		c := a;
 		
 		se ( c > 5 ) entao

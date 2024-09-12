@@ -29,13 +29,25 @@ public class ReadCommand extends Command {
 	    String str = "";
 	    
 	    if (language.equals("java")) {
-	        str = var.getId() + " = " + ((var.getType() == Types.NUMBER) ? "_scTrx.nextInt();" : "_scTrx.nextLine();") + "\n";
+	    	switch (var.getType()) {
+	        case NUMBER:
+	            str = var.getId() + " = _scTrx.nextInt();\n";
+	            break;
+	        case REALNUMBER:
+	            str = var.getId() + " = _scTrx.nextDouble();\n";
+	            break;
+	        default:
+	            str = var.getId() + " = _scTrx.nextLine();\n";
+	            break;
+	    }
 	        
 	    } else if (language.equals("c")) {
 	        if (var.getType() == Types.NUMBER) {
-	            str = "scanf(\"%lf\", &" + var.getId() + ");\n";  // Reading a double for numbers
+	            str = "scanf(\"%d\", &" + var.getId() + ");\n";
+	        } else if (var.getType() == Types.REALNUMBER) {
+	            str = "scanf(\"%lf\", &" + var.getId() + ");\n";
 	        } else {
-	            str = "scanf(\"%s\", " + var.getId() + ");\n";  // Reading a string for non-numeric input
+	            str = "scanf(\"%s\", " + var.getId() + ");\n";
 	        }
 	    }
 	    
