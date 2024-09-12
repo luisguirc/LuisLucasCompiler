@@ -5,7 +5,12 @@ programa meuPrograma
 	inicio
 		escreva("Ola mundo");
 		leia(a);
+		escreva("Eu recebi em a: ");
 		escreva(a);
+		
+		leia(x);
+		escreva("Eu recebi em x: ");
+		escreva(x);
 		
 		leia(c);
 		c := a;

@@ -45,19 +45,19 @@ public class WriteCommand extends Command {
             
         } else if (language.equals("c")) {
             if (content.startsWith("\"") && content.endsWith("\"")) {
-                str = "printf(" + content + ");\n";
+                str = "printf(" + content + ");\nprintf(\"\\n\");";
             } else {
                 Var var = getVarFromContent(content);
                 if (var != null) {
                     switch (var.getType()) {
                         case NUMBER:
-                            str = "printf(\"%d\", " + content + ");\n";
+                            str = "printf(\"%d\\n\", " + content + ");\n";
                             break;
                         case REALNUMBER:
-                            str = "printf(\"%lf\", " + content + ");\n";
+                            str = "printf(\"%lf\\n\", " + content + ");\n";
                             break;
                         case TEXT:
-                            str = "printf(\"%s\", " + content + ");\n";
+                            str = "printf(\"%s\\n\", " + content + ");\n";
                             break;
                     }
                 }
