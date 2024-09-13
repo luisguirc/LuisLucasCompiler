@@ -7,7 +7,7 @@ Before runnning the web compiler, install flask (note: you may change from "pip"
 
     pip install flask
 
-Then, simpley run the "api.py" file with the command below on the command line (note: you may change from "python" to "python3" depending on your local python installation)
+Then, simply run the "api.py" file with the command below on the command line (note: you may change from "python" to "python3" depending on your local python installation)
 
     python api.py
 
