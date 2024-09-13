@@ -8,10 +8,6 @@ programa meuPrograma
 		escreva("Eu recebi em a: ");
 		escreva(a);
 		
-		leia(x);
-		escreva("Eu recebi em x: ");
-		escreva(x);
-		
 		leia(c);
 		c := a;
 		
@@ -34,6 +30,7 @@ programa meuPrograma
 			escreva("escrevendo");
 			b := 2;
 			x := "abc";
+			escreva(x);
 		enquanto (b == 3);
 		
 		para a := 1 ate 3 passo 1 faca
