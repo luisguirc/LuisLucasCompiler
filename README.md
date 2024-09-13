@@ -1,5 +1,8 @@
 # LLCompiler (LuisLucasCompiler)
 
+Luis Guilherme Redigolo Crosselli 11201920964
+Lucas Kendy Shimizu Silva 11202020248
+
 Before runnning the web compiler, install flask (note: you may change from "pip" to "pip3" depending on your local python installation)
 
     pip install flask
